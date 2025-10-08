@@ -50,17 +50,19 @@ const RegisterPage = () => {
         name: formData.firstName + ' ' + formData.lastName,
         email: formData.email,
         password: formData.password,
-        role: formData.role
+        role: formData.role === 'Farmer' ? 'FARMER' : 'BUYER'
       };
       try {
-        const response = await fetch('http://localhost:8080/register', {
+        // Register in common auth users table
+        const authRes = await fetch(`${API_BASE_URL}/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        if (response.ok) {
+        if (authRes.ok) {
+          const auth = await authRes.json();
           // If role is Farmer, ensure Farmer record exists and store farmerId
-          if (payload.role === 'Farmer') {
+          if (payload.role === 'FARMER') {
             // try to fetch by email first
             const byEmail = await fetch(`${API_BASE_URL}/farmers/by-email?email=${encodeURIComponent(payload.email)}`);
             if (byEmail.ok) {
@@ -79,10 +81,16 @@ const RegisterPage = () => {
             }
           }
           localStorage.setItem('role', payload.role);
+          localStorage.setItem('userId', String(auth.userId));
           setSuccess('Registration successful! Please login.');
           setTimeout(() => navigate('/login'), 1500);
         } else {
-          setError('Registration failed. Please try again.');
+          try {
+            const err = await authRes.json();
+            setError(err?.message || 'Registration failed. Please try again.');
+          } catch (_) {
+            setError('Registration failed. Please try again.');
+          }
         }
       } catch (err) {
         setError('Could not connect to server.');

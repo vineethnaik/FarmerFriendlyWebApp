@@ -30,6 +30,7 @@ import { ShoppingCart } from '@mui/icons-material';
 import NavBar from './NavBar';
 import { SearchContext } from './SearchContext';
 import { CartContext } from './CartContext';
+import { useNavigate } from 'react-router-dom';
 
 const Sidebar = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -88,6 +89,7 @@ const categories = ['Vegetables', 'Fruits'];
 
 const NewArrivalPage = () => {
   const { search } = useContext(SearchContext);
+  const navigate = useNavigate();
   const { addToCart } = useContext(CartContext);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [priceRange, setPriceRange] = useState([0, 200]);
@@ -127,10 +129,18 @@ const NewArrivalPage = () => {
   };
 
   const handleViewProduct = (product) => {
-    addToCart(product);
     setSelectedProduct(product);
     setModalOpen(true);
+  };
+
+  const handleAddToCart = (product) => {
+    addToCart(product);
     setSnackbarOpen(true);
+  };
+
+  const handleBuyNow = (product) => {
+    addToCart(product);
+    navigate('/payment');
   };
 
   const handleCloseModal = () => {
@@ -233,7 +243,9 @@ const NewArrivalPage = () => {
                 <strong>Rating:</strong> {selectedProduct.rating}
               </DialogContentText>
             </DialogContent>
-            <DialogActions>
+            <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Button onClick={() => handleAddToCart(selectedProduct)} color="success" variant="outlined">Add to Cart</Button>
+              <Button onClick={() => handleBuyNow(selectedProduct)} color="success" variant="contained">Buy Now</Button>
               <Button onClick={handleCloseModal} color="primary">Close</Button>
             </DialogActions>
           </>

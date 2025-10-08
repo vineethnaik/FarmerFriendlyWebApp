@@ -6,8 +6,10 @@ import {
   Grid, 
   Card, 
   CardContent,
-  Avatar
+  Avatar,
+  Button
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const AboutPage = () => {
   const teamMembers = [
@@ -28,11 +30,16 @@ const AboutPage = () => {
     }
   ];
 
+  const navigate = useNavigate();
+
   return (
     <Container maxWidth="lg" sx={{ py: 8 }}>
       <Typography variant="h3" component="h1" gutterBottom align="center">
         About AgriZen
       </Typography>
+      <Box sx={{ textAlign: 'center', mb: 3 }}>
+        <Button variant="contained" color="success" onClick={() => navigate('/home')}>Go to Home</Button>
+      </Box>
       
       <Box sx={{ my: 6 }}>
         <Typography variant="h5" gutterBottom>

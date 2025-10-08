@@ -34,34 +34,66 @@ const LoginPage = () => {
     setError('');
     setSuccess('');
     if (formData.email && formData.password) {
-      const payload = {
-        username: formData.email,
-        password: formData.password
-      };
-      try {
-        const response = await fetch('http://localhost:8080/login', {
+      const storedRole = (localStorage.getItem('role') || 'BUYER').toUpperCase();
+      const rolesToTry = storedRole === 'FARMER' ? ['FARMER', 'BUYER'] : ['BUYER', 'FARMER'];
+
+      async function attempt(role) {
+        const payload = { email: formData.email, password: formData.password, role };
+        const res = await fetch(`${API_BASE_URL}/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        if (response.ok) {
-          // Read role from storage set at registration time (fallback to Buyer)
-          const role = localStorage.getItem('role') || 'Buyer';
-          if (role === 'Farmer') {
-            // Ensure farmerId exists; if not, try to fetch using login email
+        if (!res.ok) return null;
+        const data = await res.json();
+        return data?.success ? data : null;
+      }
+
+      try {
+        let data = null;
+        for (const role of rolesToTry) {
+          // try with preferred role, then alternate
+          // eslint-disable-next-line no-await-in-loop
+          const result = await attempt(role);
+          if (result) { data = result; break; }
+        }
+        if (data) {
+          localStorage.setItem('userId', String(data.userId));
+          localStorage.setItem('role', data.role);
+          if (data.name) localStorage.setItem('name', data.name);
+          if (data.email) localStorage.setItem('email', data.email);
+
+          // ensure farmerId exists for farmer portal
+          if (data.role === 'FARMER') {
             let farmerId = localStorage.getItem('farmerId');
             if (!farmerId) {
-              const byEmail = await fetch(`${API_BASE_URL}/farmers/by-email?email=${encodeURIComponent(formData.email)}`);
-              if (byEmail.ok) {
-                const f = await byEmail.json();
-                farmerId = f.id;
-                localStorage.setItem('farmerId', farmerId);
-              }
+              try {
+                const byEmail = await fetch(`${API_BASE_URL}/farmers/by-email?email=${encodeURIComponent(formData.email)}`);
+                if (byEmail.ok) {
+                  const f = await byEmail.json();
+                  farmerId = f.id;
+                  localStorage.setItem('farmerId', farmerId);
+                } else {
+                  // create farmer if not found
+                  const createRes = await fetch(`${API_BASE_URL}/farmers`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: localStorage.getItem('name') || 'Farmer', email: formData.email })
+                  });
+                  if (createRes.ok) {
+                    const f = await createRes.json();
+                    farmerId = f.id;
+                    localStorage.setItem('farmerId', farmerId);
+                  }
+                }
+              } catch (_) {}
             }
-            setSuccess('Login successful! Redirecting...');
-            setTimeout(() => navigate('/farmer'), 800);
+          }
+
+          setSuccess('Login successful! Redirecting...');
+          if (data.role === 'FARMER') {
+            setTimeout(() => navigate('/farmer-dashboard'), 800);
           } else {
-            setSuccess('Login successful! Redirecting...');
             setTimeout(() => navigate('/home'), 800);
           }
         } else {

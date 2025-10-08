@@ -128,11 +128,7 @@ const HomePage = () => {
       title: 'Best Prices',
       desc: 'No middlemen. Enjoy fair prices and support sustainable agriculture.'
     },
-    {
-      icon: <LocalShippingIcon sx={{ fontSize: 40, color: '#388e3c' }} />,
-      title: 'Fast Delivery',
-      desc: 'Timely and safe delivery of your orders, every time.'
-    },
+   
     {
       icon: <VerifiedUserIcon sx={{ fontSize: 40, color: '#388e3c' }} />,
       title: 'Trusted & Secure',
@@ -145,13 +141,13 @@ const HomePage = () => {
       name: 'Ravi Kumar',
       role: 'Buyer',
       text: 'AgriZen made it so easy to get fresh veggies at great prices. I love supporting local farmers!',
-      avatar: 'https://randomuser.me/api/portraits/men/32.jpg'
+      avatar: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Dindian%2Bfarmer&psig=AOvVaw3nqtwT36omErG_e5dY-WaF&ust=1760027404585000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJC0rJKDlZADFQAAAAAdAAAAABAE.jpeg'
     },
     {
       name: 'Lakshmi Devi',
       role: 'Farmer',
       text: 'I can sell my produce directly and get paid fairly. The platform is simple and effective.',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg'
+      avatar: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fstock.adobe.com%2Fsearch%3Fk%3Dindian%2Bfarmer&psig=AOvVaw3nqtwT36omErG_e5dY-WaF&ust=1760027404585000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJC0rJKDlZADFQAAAAAdAAAAABAE'
     }
   ];
 
@@ -201,7 +197,7 @@ const HomePage = () => {
             color="success"
             size="large"
             sx={{ px: 5, py: 1.5, fontSize: 20, borderRadius: 8, boxShadow: '0 4px 24px rgba(46,125,50,0.15)' }}
-            href="/products"
+            onClick={() => navigate('/products')}
           >
             Shop Now
           </Button>

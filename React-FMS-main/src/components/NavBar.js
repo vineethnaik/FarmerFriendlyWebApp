@@ -114,7 +114,7 @@ const SearchInput = styled(InputBase)(({ theme }) => ({
 }));
 
 const pages = [
-  { name: 'Home', path: '/' },
+  { name: 'Home', path: '/home' },
   { name: 'Products', path: '/products' },
   { name: 'New Arrival', path: '/new-arrival' },
   { name: 'Seeds & Saplings', path: '/seeds-saplings' },
@@ -152,7 +152,7 @@ function NavBar() {
       <Container maxWidth="xl">
         <Toolbar disableGutters sx={{ minHeight: 72 }}>
           {/* Modern Logo */}
-          <Logo variant="h5" component="a" href="/">
+          <Logo variant="h5" component="div" onClick={() => handleNavigation('/home')} style={{ cursor: 'pointer' }}>
             <img src="https://img.icons8.com/ios-filled/50/ffffff/plant-under-sun.png" alt="logo" style={{height: 36, marginRight: 8}} />
             AgriZen
           </Logo>
@@ -279,8 +279,25 @@ function NavBar() {
             <Typography variant="body2"><strong>Location:</strong> Hyderabad, India</Typography>
           </Box>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Button onClick={() => setProfileOpen(false)} color="primary">Close</Button>
+          <Button
+            onClick={() => {
+              try {
+                localStorage.removeItem('userId');
+                localStorage.removeItem('role');
+                localStorage.removeItem('name');
+                localStorage.removeItem('email');
+                localStorage.removeItem('farmerId');
+              } catch (e) {}
+              setProfileOpen(false);
+              navigate('/login');
+            }}
+            color="error"
+            variant="contained"
+          >
+            Logout
+          </Button>
         </DialogActions>
       </Dialog>
     </StyledAppBar>

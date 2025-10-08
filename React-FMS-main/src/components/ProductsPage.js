@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   Box,
   Grid,
@@ -30,11 +30,13 @@ import {
   Snackbar,
   Alert
 } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Facebook, Twitter, Instagram, LinkedIn, ShoppingCart } from '@mui/icons-material';
 import NavBar from './NavBar';
 import { SearchContext } from './SearchContext';
 import { CartContext } from './CartContext';
+import { useNavigate } from 'react-router-dom';
 
 const Sidebar = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -64,6 +66,7 @@ const Footer = styled(Box)(({ theme }) => ({
 const categories = ['Vegetables', 'Fruits', 'Dairy', 'Meat', 'Bakery', 'Other'];
 const practices = ['Organic', 'Conventional', 'Regenerative', 'Biodynamic', 'Hydroponic'];
 
+// Static demo catalog (restored)
 const products = [
   {
     name: 'Organic Tomatoes',
@@ -167,8 +170,12 @@ const products = [
   },
 ];
 
+const API = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
+const BACKEND_ORIGIN = API.replace(/\/?api\/?$/, '');
+
 const ProductsPage = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [serverProducts, setServerProducts] = useState([]);
   const [selectedPractices, setSelectedPractices] = useState([]);
   const [priceRange, setPriceRange] = useState([30, 180]);
   const [sort, setSort] = useState('Newest');
@@ -177,6 +184,7 @@ const ProductsPage = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const navigate = useNavigate();
   const { addToCart } = useContext(CartContext);
 
   // Handle filters
@@ -191,8 +199,35 @@ const ProductsPage = () => {
     );
   };
 
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch(`${API}/crops`);
+        if (res.ok) {
+          const rows = await res.json();
+          // map backend schema to UI product card
+          const mapped = rows.map(r => ({
+            name: r.cropName,
+            farm: r.farmer?.name || 'Farmer',
+            location: r.location,
+            price: `₹${r.price}`,
+            unit: '/ unit',
+            fairPrice: true,
+            organic: false,
+            image: r.imageUrl && r.imageUrl.startsWith('http') ? r.imageUrl : (r.imageUrl ? `${BACKEND_ORIGIN}${r.imageUrl}` : undefined)
+          }));
+          setServerProducts(mapped);
+        }
+      } catch (_) {}
+    }
+    load();
+  }, []);
+
+  // Show server results first, then demo catalog as fallback content
+  const allProducts = serverProducts.length ? [...serverProducts, ...products] : products;
+
   // Filtering logic
-  let filteredProducts = products.filter(product =>
+  let filteredProducts = allProducts.filter(product =>
     (search === '' ||
       product.name.toLowerCase().includes(search.toLowerCase()) ||
       product.farm.toLowerCase().includes(search.toLowerCase()) ||
@@ -211,10 +246,19 @@ const ProductsPage = () => {
 
   // Modal handlers
   const handleViewProduct = (product) => {
-    addToCart(product);
     setSelectedProduct(product);
     setModalOpen(true);
+  };
+
+  const handleAddToCart = (product) => {
+    addToCart(product);
     setSnackbarOpen(true);
+  };
+
+  const handleBuyNow = (product) => {
+    // Single-item checkout: replace cart with just this item
+    addToCart(product);
+    navigate('/payment');
   };
   const handleCloseModal = () => {
     setModalOpen(false);
@@ -348,7 +392,9 @@ const ProductsPage = () => {
                 {selectedProduct.organic && <Chip label="Organic" color="success" size="small" sx={{ fontWeight: 700, ml: 1 }} />}
               </DialogContentText>
             </DialogContent>
-            <DialogActions>
+            <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Button onClick={() => handleAddToCart(selectedProduct)} color="success" variant="outlined">Add to Cart</Button>
+              <Button onClick={() => handleBuyNow(selectedProduct)} color="success" variant="contained">Buy Now</Button>
               <Button onClick={handleCloseModal} color="primary">Close</Button>
             </DialogActions>
           </>
@@ -375,10 +421,10 @@ const ProductsPage = () => {
               <Typography variant="h6" gutterBottom>
                 Quick Links
               </Typography>
-              <Link href="#" color="inherit" display="block">About Us</Link>
-              <Link href="#" color="inherit" display="block">Products</Link>
-              <Link href="#" color="inherit" display="block">Contact</Link>
-              <Link href="#" color="inherit" display="block">Terms & Conditions</Link>
+              <Link component={RouterLink} to="/about" color="inherit" display="block">About Us</Link>
+              <Link component={RouterLink} to="/products" color="inherit" display="block">Products</Link>
+              <Link component={RouterLink} to="/home" color="inherit" display="block">Home</Link>
+              <Link component={RouterLink} to="/new-arrival" color="inherit" display="block">New Arrival</Link>
             </Grid>
             <Grid item xs={12} md={4}>
               <Typography variant="h6" gutterBottom>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { 
   Container, 
   Typography, 
@@ -14,42 +14,14 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { useNavigate } from 'react-router-dom';
+import { CartContext } from './CartContext';
 
 const CartPage = () => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: 'Organic Tomatoes',
-      price: 45,
-      quantity: 2,
-      image: 'https://images.unsplash.com/photo-1546094097-24607dd23f8e?w=500&auto=format&fit=crop&q=60'
-    },
-    {
-      id: 2,
-      name: 'Fresh Spinach',
-      price: 30,
-      quantity: 1,
-      image: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=500&auto=format&fit=crop&q=60'
-    }
-  ]);
+  const { cart, removeFromCart, incrementItem, decrementItem } = useContext(CartContext);
 
   const navigate = useNavigate();
 
-  const updateQuantity = (id, change) => {
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + change) }
-          : item
-      )
-    );
-  };
-
-  const removeItem = (id) => {
-    setCartItems(items => items.filter(item => item.id !== id));
-  };
-
-  const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const total = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
 
   const handleProceedToCheckout = () => {
     navigate('/payment');
@@ -61,15 +33,15 @@ const CartPage = () => {
         Shopping Cart
       </Typography>
       
-      {cartItems.length === 0 ? (
+      {cart.length === 0 ? (
         <Box textAlign="center" py={4}>
           <Typography variant="h6">Your cart is empty</Typography>
         </Box>
       ) : (
         <Grid container spacing={3}>
           <Grid item xs={12} md={8}>
-            {cartItems.map((item) => (
-              <Card key={item.id} sx={{ mb: 2 }}>
+            {cart.map((item, index) => (
+              <Card key={`${item.name}-${index}`} sx={{ mb: 2 }}>
                 <CardContent>
                   <Grid container spacing={2} alignItems="center">
                     <Grid item xs={3}>
@@ -87,17 +59,17 @@ const CartPage = () => {
                     </Grid>
                     <Grid item xs={3}>
                       <Box display="flex" alignItems="center">
-                        <IconButton onClick={() => updateQuantity(item.id, -1)}>
+                        <IconButton onClick={() => decrementItem(index)}>
                           <RemoveIcon />
                         </IconButton>
-                        <Typography sx={{ mx: 2 }}>{item.quantity}</Typography>
-                        <IconButton onClick={() => updateQuantity(item.id, 1)}>
+                        <Typography sx={{ mx: 2 }}>{item.quantity || 1}</Typography>
+                        <IconButton onClick={() => incrementItem(index)}>
                           <AddIcon />
                         </IconButton>
                       </Box>
                     </Grid>
                     <Grid item xs={2} textAlign="right">
-                      <IconButton onClick={() => removeItem(item.id)} color="error">
+                      <IconButton onClick={() => removeFromCart(index)} color="error">
                         <DeleteIcon />
                       </IconButton>
                     </Grid>
