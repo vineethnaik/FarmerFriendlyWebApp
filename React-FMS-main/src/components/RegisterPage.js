@@ -13,6 +13,8 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
+
 const RegisterPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -57,6 +59,26 @@ const RegisterPage = () => {
           body: JSON.stringify(payload)
         });
         if (response.ok) {
+          // If role is Farmer, ensure Farmer record exists and store farmerId
+          if (payload.role === 'Farmer') {
+            // try to fetch by email first
+            const byEmail = await fetch(`${API_BASE_URL}/farmers/by-email?email=${encodeURIComponent(payload.email)}`);
+            if (byEmail.ok) {
+              const f = await byEmail.json();
+              localStorage.setItem('farmerId', f.id);
+            } else {
+              const createRes = await fetch(`${API_BASE_URL}/farmers`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: payload.name, email: payload.email })
+              });
+              if (createRes.ok) {
+                const f = await createRes.json();
+                localStorage.setItem('farmerId', f.id);
+              }
+            }
+          }
+          localStorage.setItem('role', payload.role);
           setSuccess('Registration successful! Please login.');
           setTimeout(() => navigate('/login'), 1500);
         } else {

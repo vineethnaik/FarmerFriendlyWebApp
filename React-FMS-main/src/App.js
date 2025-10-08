@@ -12,6 +12,7 @@ import SeedsSaplingsPage from './components/SeedsSaplingsPage';
 import CartPage from './components/CartPage';
 import PaymentPage from './components/PaymentPage';
 import AboutPage from './components/AboutPage';
+import FarmerDashboard from './components/FarmerDashboard';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/payment" element={<PaymentPage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/farmer" element={<FarmerDashboard farmerId={localStorage.getItem('farmerId')} />} />
           </Routes>
         </Router>
       </CartProvider>

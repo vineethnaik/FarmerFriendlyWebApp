@@ -11,6 +11,8 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
+
 const LoginPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -43,8 +45,25 @@ const LoginPage = () => {
           body: JSON.stringify(payload)
         });
         if (response.ok) {
-          setSuccess('Login successful! Redirecting...');
-          setTimeout(() => navigate('/home'), 1200);
+          // Read role from storage set at registration time (fallback to Buyer)
+          const role = localStorage.getItem('role') || 'Buyer';
+          if (role === 'Farmer') {
+            // Ensure farmerId exists; if not, try to fetch using login email
+            let farmerId = localStorage.getItem('farmerId');
+            if (!farmerId) {
+              const byEmail = await fetch(`${API_BASE_URL}/farmers/by-email?email=${encodeURIComponent(formData.email)}`);
+              if (byEmail.ok) {
+                const f = await byEmail.json();
+                farmerId = f.id;
+                localStorage.setItem('farmerId', farmerId);
+              }
+            }
+            setSuccess('Login successful! Redirecting...');
+            setTimeout(() => navigate('/farmer'), 800);
+          } else {
+            setSuccess('Login successful! Redirecting...');
+            setTimeout(() => navigate('/home'), 800);
+          }
         } else {
           setError('Login failed. Please check your credentials.');
         }
