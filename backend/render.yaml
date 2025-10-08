@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: agrizen-backend
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: main
+    buildCommand: mvn clean package -DskipTests
+    startCommand: java -jar target/agrizen-backend-0.0.1-SNAPSHOT.jar
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: agrizen-mysql
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: agrizen-mysql
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: agrizen-mysql
+          property: password
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update
+      - key: SPRING_JPA_SHOW_SQL
+        value: false
+      - key: SPRING_JPA_HIBERNATE_DIALECT
+        value: org.hibernate.dialect.MySQLDialect
+
+databases:
+  - name: agrizen-mysql
+    databaseName: agrigrow
+    user: agrizen_user
+    plan: free
+    region: singapore
