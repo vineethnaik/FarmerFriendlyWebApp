@@ -13,6 +13,8 @@ import CartPage from './components/CartPage';
 import PaymentPage from './components/PaymentPage';
 import AboutPage from './components/AboutPage';
 import FarmerDashboard from './components/FarmerDashboard';
+import LoginForm from './components/LoginForm';
+import RegisterForm from './components/RegisterForm';
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
             <Route path="/" element={<WelcomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/auth/login" element={<LoginForm />} />
+            <Route path="/auth/register" element={<RegisterForm />} />
             <Route path="/home" element={<HomePage />} />
             <Route path="/products" element={<ProductsPage />} />
             <Route path="/new-arrival" element={<NewArrivalPage />} />
@@ -30,7 +34,9 @@ function App() {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/payment" element={<PaymentPage />} />
             <Route path="/about" element={<AboutPage />} />
-            <Route path="/farmer" element={<FarmerDashboard farmerId={localStorage.getItem('farmerId')} />} />
+            <Route path="/farmer" element={<FarmerDashboard farmerId={localStorage.getItem('userId')} />} />
+            <Route path="/farmer-dashboard" element={<FarmerDashboard farmerId={localStorage.getItem('userId')} />} />
+            <Route path="/buyer-dashboard" element={<HomePage />} />
           </Routes>
         </Router>
       </CartProvider>
