@@ -60,47 +60,46 @@ function AddCropForm({ farmerId }) {
 	}
 
 	return (
-		<div style={{ maxWidth: 640, margin: '20px auto' }}>
-			<h2>Add Crop</h2>
-			<form onSubmit={handleSubmit}>
+		<div style={{ maxWidth: 760, margin: '8px auto' }}>
+			<form onSubmit={handleSubmit} style={{ display: 'grid', gap: 12 }}>
 				<div style={{ marginBottom: 10 }}>
-					<label>Crop Name</label>
-					<input name="cropName" value={form.cropName} onChange={handleChange} required style={{ width: '100%' }} />
+					<label style={{ color: '#225c2b', fontWeight: 600 }}>Crop Name</label>
+					<input name="cropName" value={form.cropName} onChange={handleChange} required style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #d9e2da' }} />
 				</div>
 				<div style={{ marginBottom: 10 }}>
-					<label>Crop Type</label>
-					<input name="cropType" value={form.cropType} onChange={handleChange} required style={{ width: '100%' }} />
+					<label style={{ color: '#225c2b', fontWeight: 600 }}>Crop Type</label>
+					<input name="cropType" value={form.cropType} onChange={handleChange} required style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #d9e2da' }} />
 				</div>
-				<div style={{ display: 'flex', gap: 10 }}>
+				<div style={{ display: 'flex', gap: 12 }}>
 					<div style={{ flex: 1 }}>
-						<label>Quantity</label>
-						<input type="number" name="quantity" value={form.quantity} onChange={handleChange} required style={{ width: '100%' }} />
+						<label style={{ color: '#225c2b', fontWeight: 600 }}>Quantity</label>
+						<input type="number" name="quantity" value={form.quantity} onChange={handleChange} required style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #d9e2da' }} />
 					</div>
 					<div style={{ flex: 1 }}>
-						<label>Price</label>
-						<input type="number" step="0.01" name="price" value={form.price} onChange={handleChange} required style={{ width: '100%' }} />
+						<label style={{ color: '#225c2b', fontWeight: 600 }}>Price</label>
+						<input type="number" step="0.01" name="price" value={form.price} onChange={handleChange} required style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #d9e2da' }} />
 					</div>
 				</div>
-				<div style={{ margin: '10px 0' }}>
-					<label>Harvest Date</label>
-					<input type="date" name="harvestDate" value={form.harvestDate} onChange={handleChange} required style={{ width: '100%' }} />
+				<div>
+					<label style={{ color: '#225c2b', fontWeight: 600 }}>Harvest Date</label>
+					<input type="date" name="harvestDate" value={form.harvestDate} onChange={handleChange} required style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #d9e2da' }} />
 				</div>
 				<div style={{ marginBottom: 10 }}>
-					<label>Location</label>
-					<input name="location" value={form.location} onChange={handleChange} required style={{ width: '100%' }} />
+					<label style={{ color: '#225c2b', fontWeight: 600 }}>Location</label>
+					<input name="location" value={form.location} onChange={handleChange} required style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #d9e2da' }} />
 				</div>
 				<div style={{ marginBottom: 10 }}>
-					<label>Description</label>
-					<textarea name="description" value={form.description} onChange={handleChange} rows={4} style={{ width: '100%' }} />
+					<label style={{ color: '#225c2b', fontWeight: 600 }}>Description</label>
+					<textarea name="description" value={form.description} onChange={handleChange} rows={4} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #d9e2da' }} />
 				</div>
 				<div style={{ marginBottom: 10 }}>
-					<label>Image</label>
+					<label style={{ color: '#225c2b', fontWeight: 600 }}>Image</label>
 					<input type="file" name="image" accept="image/*" onChange={handleChange} />
 				</div>
-				<button type="submit" disabled={submitting}>{submitting ? 'Submitting...' : 'Add Crop'}</button>
+				<button type="submit" disabled={submitting} style={{ background: '#2e7d32', color: 'white', border: 0, padding: '12px 16px', borderRadius: 8, cursor: 'pointer' }}>{submitting ? 'Submitting...' : 'Add Crop'}</button>
 			</form>
 			{status.msg && (
-				<p style={{ color: status.type === 'error' ? 'red' : 'green' }}>{status.msg}</p>
+				<p style={{ color: status.type === 'error' ? '#c62828' : '#2e7d32', fontWeight: 600 }}>{status.msg}</p>
 			)}
 		</div>
 	);
